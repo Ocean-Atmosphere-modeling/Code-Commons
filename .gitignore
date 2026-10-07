@@ -1,0 +1,14 @@
+# ROMS source / model files (not tracked here)
+roms/
+
+# Large data files
+*.nc
+
+# Jupyter auto-saves
+.ipynb_checkpoints/
+
+# Python cache
+__pycache__/
+
+# Mac system files
+.DS_Store
