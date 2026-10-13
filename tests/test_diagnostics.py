@@ -114,9 +114,23 @@ def test_boundary_transport_signs():
     np.testing.assert_allclose(q_w, 0.1 * 100.0 * 1000.0 * 6)
     np.testing.assert_allclose(q_e, -q_w)
     zeta = xr.DataArray(np.full((3, 6), 1.0), dims=("zeta_time", "eta_rho"))
-    np.testing.assert_allclose(D.boundary_transport(ubar, g, "west", zeta=zeta), 0.1 * 101.0 * 1000.0 * 6)
+    q = D.boundary_transport(ubar, g, "west", zeta=zeta)
+    assert q.dims == ("v2d_time",)  # one value per velocity record, not a time x time matrix
+    np.testing.assert_allclose(q, 0.1 * 101.0 * 1000.0 * 6)
     vbar = xr.DataArray(np.full((3, 8), 0.1), dims=("v2d_time", "xi_v"))
     np.testing.assert_allclose(D.boundary_transport(vbar, g, "north"), -0.1 * 100 * 1000 * 8)
+
+
+def test_boundary_transport_interpolates_zeta_in_time():
+    g = with_masks(uniform_grid(M=6, L=8, h=100.0, dx=1000.0))
+    tv = np.array(["2026-01-01T00", "2026-01-01T06"], dtype="datetime64[ns]")
+    tz = np.array(["2026-01-01T00", "2026-01-01T03", "2026-01-01T06"], dtype="datetime64[ns]")
+    ubar = xr.DataArray(np.full((2, 6), 0.1), dims=("v2d_time", "eta_u"), coords={"v2d_time": tv})
+    zeta = xr.DataArray(np.array([0.0, 5.0, 10.0])[:, None] * np.ones(6), dims=("zeta_time", "eta_rho"),
+                        coords={"zeta_time": tz})
+    q = D.boundary_transport(ubar, g, "west", zeta=zeta)
+    assert q.dims == ("v2d_time",)
+    np.testing.assert_allclose(q, [0.1 * 100 * 1000 * 6, 0.1 * 110 * 1000 * 6])
 
 
 def test_synthetic_boundary_budget_closes(synthetic):
@@ -126,6 +140,7 @@ def test_synthetic_boundary_budget_closes(synthetic):
     bry = io.open_nc(synthetic["bry"])
     total = sum(D.boundary_transport(bry[("ubar_" if s in ("west", "east") else "vbar_") + s], g, s,
                                      zeta=bry[f"zeta_{s}"]).values for s in ("west", "south", "east", "north"))
+    assert np.shape(total) == (bry.sizes["v2d_time"],)
     assert np.abs(total).max() < 1.0  # m3/s, against ~3 Sv through each of south and north
 
 

@@ -449,7 +449,7 @@ records bracketing each model time; `DIURNAL_SRFLUX` when shortwave is daily-mea
 | Bulk | lwrad_down / lwrad | lrf_time | W m⁻² `[VERIFY V6]` |
 | Flux | sustr, svstr | sms_time | N m⁻² |
 | Flux | shflux | shf_time | W m⁻², positive into ocean |
-| Flux | swflux | swf_time | m s⁻¹, (E−P)/ρw, positive = evaporation (V7; older ROMS: cm day⁻¹) |
+| Flux | swflux | swf_time | m s⁻¹, (E−P)/ρw, positive = evaporation (V7) |
 
 Time variable names are conventions; the `time` attribute is what ROMS follows.
 

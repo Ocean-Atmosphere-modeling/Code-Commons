@@ -231,13 +231,24 @@ def boundary_transport(vel_bar: xr.DataArray, grid: xr.Dataset, side: str, zeta=
 
     ``vel_bar`` is the normal depth-mean velocity on that side (``ubar_west``/``ubar_east``
     or ``vbar_south``/``vbar_north``). Face depth = mean of the two adjacent ``h`` plus the
-    boundary ζ at the rho point (a documented approximation).
+    boundary ζ at the rho point (a documented approximation). ``zeta`` usually has its own
+    time axis (``zeta_time`` vs ``v2d_time``): it is interpolated onto the velocity times when
+    both carry time coordinates, else the two axes must have the same length and are assumed
+    identical.
     """
     depth, width, m = _face_geometry(grid, side)
     along = vel_bar.dims[-1]
     D = xr.DataArray(depth, dims=along)
     if zeta is not None:
         z = zeta.rename({zeta.dims[-1]: along})
+        if z.ndim == 2 and vel_bar.ndim == 2 and z.dims[0] != vel_bar.dims[0]:
+            zt, vt = z.dims[0], vel_bar.dims[0]
+            if zt in z.coords and vt in vel_bar.coords:
+                if not np.array_equal(z[zt].values, vel_bar[vt].values):
+                    z = z.interp({zt: vel_bar[vt].values})
+            elif z.sizes[zt] != vel_bar.sizes[vt]:
+                raise ValueError(f"cannot match {zt} ({z.sizes[zt]}) to {vt} ({vel_bar.sizes[vt]}) without coordinates")
+            z = xr.DataArray(z.data, dims=(vt, along))
         D = D + xr.DataArray(z.data, dims=z.dims)
     vb = xr.DataArray(vel_bar.data, dims=vel_bar.dims, coords={k: v for k, v in vel_bar.coords.items()
                                                                 if along not in v.dims})

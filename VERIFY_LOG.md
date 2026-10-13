@@ -41,7 +41,9 @@ IF (ABS(wrk(i)).ge.ABS(Aspval)) THEN
 `Aspval` = the variable's `_FillValue`, else `spval_check = 1.0E+35` (`Modules/mod_scalars.F` l.861).
 - Values with |x| ≥ |_FillValue| become **0**, not NaN.
 - **NaN is not caught**: `ABS(NaN) >= x` is false, so NaN passes into the model state.
-  The serial read path does not multiply by the land mask, so NaN on land stays NaN.
+- Values are copied as read. Land points are set to 0 only when reading packed
+  water-points-only data (`READ_WATER`, `nf_fread3d.F` l.872–886). Otherwise NaN on land stays
+  NaN, and `NaN × 0 = NaN` lets it leak through stencils next to the coast.
 - A `_FillValue` with small magnitude zeroes every value larger in magnitude.
 → Notebook: NaN at wet points FAIL; NaN at land WARN; `_FillValue` on state variables WARN
   (and report its magnitude).
@@ -99,7 +101,7 @@ ELSE          !RH input was actually specific humidity in g/kg
 `External/varinfo.yaml` l.1219–1228:
 `swflux`: long_name "data surface net freshwater flux, (E-P)/rhow", units **meter second-1**,
 standard_name `surface_upward_water_flux_from_file`, scale 1.0 → **positive = net evaporation**.
-**SPEC FIX:** spec §8.2 said cm day⁻¹; ROMS 4.x expects m s⁻¹ (older ROMS used cm day⁻¹).
+**SPEC FIX:** spec §8.2 said cm day⁻¹; this ROMS version expects m s⁻¹.
 
 ## V8 — Tide reconstruction formula; Cangle reference; rotation to grid
 
