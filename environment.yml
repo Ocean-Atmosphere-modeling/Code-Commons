@@ -1,0 +1,22 @@
+name: code-commons
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.11
+  - numpy
+  - scipy
+  - pandas
+  - xarray
+  - netcdf4
+  - dask
+  - matplotlib
+  - cmocean
+  - gsw
+  - pyyaml
+  - cartopy
+  - pytmd
+  - jupyterlab
+  - jupytext
+  - pytest
+  - nbmake
+  - pip

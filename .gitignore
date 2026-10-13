@@ -12,3 +12,11 @@ __pycache__/
 
 # Mac system files
 .DS_Store
+
+# Generated synthetic data and notebook outputs
+data/
+outputs/
+
+# Packaging
+*.egg-info/
+build/

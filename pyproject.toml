@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "romscommons"
+version = "0.1.0"
+description = "Small, tested helpers for inspecting and checking ROMS input files"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+
+[tool.setuptools]
+packages = ["romscommons"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore::DeprecationWarning:cartopy.*",
+    "ignore:Passing 'N' to ListedColormap:DeprecationWarning",  # cmocean vs matplotlib >= 3.11
+    "ignore:numpy.ndarray size changed:RuntimeWarning",  # compiled netCDF dependency, harmless
+]

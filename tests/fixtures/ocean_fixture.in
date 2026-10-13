@@ -1,0 +1,46 @@
+! Parser fixture for tests/test_io.py — not a runnable ROMS input.
+! Exercises: == and =, ! comments, \ and | continuation, Fortran reals,
+! logicals, repeat syntax, LBC lines (W S E N), multi-line tracer LBC.
+
+       TITLE = Fixture: hard cases for the ocean.in parser
+    MyAppCPP = FIXTURE
+
+          Lm == 40            ! Number of I-direction INTERIOR RHO-points
+          Mm == 30
+           N == 12
+         NAT =  2
+
+   LBC(isFsur) ==   Cha     Clo     Che     Gra         ! free-surface
+   LBC(isUbar) ==   Fla     Clo     Shc     Red         ! 2D U-momentum
+   LBC(isVbar) ==   Fla     Clo     Fla     Fla
+   LBC(isUvel) ==   RadNud  Clo     Rad     Mix
+   LBC(isVvel) ==   RadNud  Clo     Rad     Cla
+
+   LBC(isTvar) ==   RadNud  Clo     Rad     Cla \       ! temperature
+                    Gra     Clo     Per     Nes         ! salinity
+
+ad_LBC(isFsur) ==   Per     Clo     Per     Clo
+
+   VolCons(west)  ==  T
+   VolCons(east)  ==  F
+   VolCons(south) ==  F
+   VolCons(north) ==  F
+
+      NTIMES == 4800
+          DT == 180.0d0
+     NDTFAST == 30
+      DSTART =  9497.5d0                   ! days
+    TIME_REF =  20000101.0d0
+       DCRIT == 1.0D-1
+       TNUDG == 2*10.0d0                   ! days
+       Akt_bak == 5.0d-6 1.0d-6
+  LnudgeTCLM == T F
+Hout(idUvel) == T
+
+     NFFILES == 3
+     FRCNAME == winds_2017.nc |
+                winds_2018.nc \
+                heat_2017.nc  |
+                heat_2018.nc  \
+                tair.nc
+     GRDNAME == ../grid/my_grid.nc

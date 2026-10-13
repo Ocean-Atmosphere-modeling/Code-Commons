@@ -1,0 +1,55 @@
+# Moana (New Zealand, ~5 km) — real configuration. Built per BUILD_SPEC §4.1 on 2026-10-12.
+# Absolute paths. Base data path: /projects/f_omg_1/moa/moana/Input/ (read-only — never write there).
+#
+# What was found (2026-10-12):
+#   Input/initial/   glorys12_20171001_20171001.nc        GLORYS12 on lat/lon/depth — source data, NOT ROMS format
+#   Input/boundary/  glorys12_{W,S,E,N}_surf_2017-2019.nc GLORYS12 edges, surface only — source data, NOT ROMS format
+#   Input/tides/     tpxo9_atlas_v5_moana.nc               TPXO9 hRe/hIm/uRe/... — source data (nb03 Part B input)
+#   Input/atmosphere/cfsv2_nz/*.nc                         CFSv2 raw monthly fields — source data, NOT ROMS format
+#   Input/rivers/    CAMELS-NZ zips                        out of scope
+#   ../oceanum_input/*                                     all sub-folders empty
+#   ../grd_moana5km.nc                                     ROMS grid (pyroms), 397 x 467, the only ROMS-format file
+#   /scratch/ss4338/Project/Moana-2.0/Apps/moana/Input/moana_grid.nc   same grid (h, mask, lon, lat, pm, angle identical)
+#   /scratch/ss4338/Project/Moana-2.0/Apps/moana/Runs/moana.in         published NZB ocean.in: Lm 395, Mm 465 (matches
+#       the grid), N 50, Vtransform 2, Vstretching 5, THETA_S 6, THETA_B 2, TCLINE 250, DT 100, NDTFAST 44,
+#       TIME_REF 20100101, DSTART =199302 (looks wrong), all file names on /nesi/... (not reachable here).
+#       Candidate for ocean_in — NOT set until confirmed (see open questions in the Phase 0 summary).
+#
+# Roles with no ROMS-format candidate are null until the ROMS input files are produced.
+name: moana
+ocean_in: null            # candidate: /scratch/ss4338/Project/Moana-2.0/Apps/moana/Runs/moana.in (confirm)
+roms_log: null            # needed for the nb01 Courant / rx0 / rx1 cross-check
+grid: /projects/f_omg_1/moa/moana/grd_moana5km.nc
+ini: null                 # no ROMS-format IC yet (GLORYS source only)
+ini_record: 0
+frc: []                   # no ROMS-format forcing yet (CFSv2 source only)
+tide: null                # no ROMS tide file yet; nb03 Part B can build one from Input/tides/tpxo9_atlas_v5_moana.nc
+bry: null                 # no ROMS-format boundary file yet (GLORYS edges only)
+nud: null
+clm: null
+model:                    # fill once the run is defined (or set ocean_in)
+  DT: null
+  NDTFAST: null
+  NTIMES: null
+  N: null                 # grid file stores N 40 / THETA_S 6.5 / THETA_B 2 / Tcline 100 (Vstretching 5 inferred);
+  Vtransform: null        #   the published moana.in uses N 50 / 6.0 / 2.0 / 250 — ROMS uses ocean.in values
+  Vstretching: null
+  THETA_S: null
+  THETA_B: null
+  TCLINE: null
+  TIME_REF: null
+  DSTART: null
+  TIDE_START: null
+  Dcrit: null
+open_boundaries: [west, south, east, north]   # unconfirmed; the published moana.in has all four sides open
+points: []                # add named stations, e.g. {name: cook_strait, lon: 174.6, lat: -41.3}
+transect: null            # null -> middle eta row
+nudging:
+  width_cells: 10
+  boundary_timescale_days: 1.0
+  shape: cosine
+  tracers: true
+  momentum_3d: true
+  momentum_2d: false
+  interior_timescale_days: null
+output_dir: ../outputs/moana

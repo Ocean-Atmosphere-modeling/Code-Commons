@@ -1,0 +1,41 @@
+# Synthetic case written by: python examples/make_synthetic_case.py --out data/synthetic
+# Relative paths resolve against this file's directory (configs/).
+name: synthetic
+ocean_in: ../data/synthetic/ocean_synthetic.in   # source of truth for run parameters and LBC
+roms_log: null            # optional ROMS stdout to cross-check Courant / rx0 / rx1
+grid: ../data/synthetic/grid.nc
+ini: ../data/synthetic/ini.nc
+ini_record: 0
+frc: [../data/synthetic/frc_native.nc, ../data/synthetic/frc_coarse.nc]
+tide: ../data/synthetic/tide.nc
+bry: ../data/synthetic/bry.nc
+nud: null                 # existing nudging file to inspect (nb04 part B)
+clm: null
+model:                    # used only for keys missing from ocean_in (or when ocean_in is null)
+  DT: 180.0
+  NDTFAST: 30
+  NTIMES: 4800
+  N: 12
+  Vtransform: 2
+  Vstretching: 4
+  THETA_S: 7.0
+  THETA_B: 2.0
+  TCLINE: 50.0
+  TIME_REF: 20000101.0
+  DSTART: 9497.0
+  TIDE_START: 9497.0
+  Dcrit: 0.10
+open_boundaries: [west, south, east, north]   # used only if LBC not available from ocean_in
+points:                   # named stations for profiles / time series
+  - {name: shelf, lon: 178.91, lat: -40.51}
+  - {name: slope, lon: 180.23, lat: -40.36}
+transect: {start: [178.58, -41.09], end: [181.38, -39.86]}   # cross-shelf; null -> middle eta row
+nudging:                  # nb04 builder parameters
+  width_cells: 10
+  boundary_timescale_days: 1.0
+  shape: cosine           # cosine | linear
+  tracers: true
+  momentum_3d: true
+  momentum_2d: false
+  interior_timescale_days: null
+output_dir: ../outputs/synthetic
